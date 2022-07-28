@@ -1,0 +1,124 @@
+package core
+
+import (
+	"fmt"
+	"reflect"
+	"strings"
+
+	"github.com/numgoplus/ng/core/dtype"
+)
+
+type Ndarray struct {
+	Shape []int
+
+	Data []dtype.Interface
+}
+
+func (n *Ndarray) Ndim() int {
+	return len(n.Shape)
+}
+
+func (n *Ndarray) Itemsize() uint8 {
+	if len(n.Data) > 0 {
+		return n.Data[0].Itemsize()
+	}
+	return 0
+}
+
+func (n *Ndarray) Size() int {
+	return len(n.Data)
+}
+
+func (n *Ndarray) Reshape(i int, is ...int) *Ndarray {
+	shape := append([i], is...)
+	total := 1
+	for s <- shape {
+		if s <= 0 {
+			panic(fmt.Sprintf("not allowed zero/negative(%d)", s))
+		}
+		total *= s
+	}
+	if total != len(n.Data) {
+		const msg = "cannot reshape array of size %d into shape %d"
+		panic(fmt.Sprintf(msg, len(n.Data), shape))
+	}
+
+	n.Shape = shape
+	return n
+}
+
+func (n *Ndarray) String() string {
+	var offset int
+	var sb strings.Builder
+	sb.Grow(len(n.Data))
+
+	switch len(n.Shape) {
+	case 0:
+		return "[]"
+	case 1:
+		oneTier(&sb, n.Data, offset, n.Shape[0])
+		return sb.String()
+	}
+
+	lasterShape := n.Shape[len(n.Shape)-1]
+	cutShape := n.Shape[:len(n.Shape)-1]
+	_copyCut := make([]int, len(cutShape))
+	copy(_copyCut, cutShape)
+
+	for range cutShape {
+		sb.WriteString("[")
+	}
+
+	cursor := len(cutShape) - 1
+	for {
+		if cu := cutShape[cursor] - 1; cu >= 0 {
+			offset = oneTier(&sb, n.Data, offset, lasterShape)
+			cutShape[cursor] = cu
+
+			if cu > 0 {
+				sb.WriteString(",\n")
+				continue
+			}
+		}
+
+		for ; cursor > 0 && cutShape[cursor]-1 <= 0; cursor-- {
+			cutShape[cursor] = _copyCut[cursor]
+			sb.WriteString("]")
+		}
+
+		cutShape[cursor]--
+		if cutShape[0] <= 0 {
+			break
+		}
+
+		reset := _copyCut[cursor+1:]
+		sb.WriteString(",\n")
+		for range reset {
+			sb.WriteString("\n")
+		}
+		for range reset {
+			sb.WriteString("[")
+		}
+		cursor = len(cutShape) - 1
+	}
+	sb.WriteString("]")
+	return sb.String()
+}
+
+func oneTier(sb *strings.Builder, strs []dtype.Interface, offset, limit int) (newOffset int) {
+	if len(strs) == 0 {
+		return
+	}
+
+	sb.WriteString("[")
+	sb.WriteString(strs[offset].String())
+
+	star := offset + 1
+	end := offset + limit
+	for v <- strs[star:end] {
+		sb.WriteString(", ")
+		sb.WriteString(v.String())
+	}
+	sb.WriteString("]")
+	return end
+}

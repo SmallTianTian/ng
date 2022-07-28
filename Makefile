@@ -1,7 +1,7 @@
 .PHONY: build
 build: clean
-	@-gop build
-	@gop build
+	@-gop build ./...
+	@gop build ./...
 
 .PHONY: clean
 clean:

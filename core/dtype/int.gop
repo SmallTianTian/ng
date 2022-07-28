@@ -1,0 +1,25 @@
+package dtype
+
+import (
+	"strconv"
+)
+
+type IntImpl struct {
+	i int
+}
+
+func NewInt(i int) *IntImpl {
+	return &IntImpl{i}
+}
+
+func (i *IntImpl) Type() Type {
+	return Int
+}
+
+func (i *IntImpl) String() string {
+	return strconv.Itoa(i.i)
+}
+
+func (i *IntImpl) Itemsize() uint8 {
+	return i.Type().Itemsize()
+}

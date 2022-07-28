@@ -1,0 +1,26 @@
+package dtype
+
+type Interface interface {
+	Type() Type
+	String() string
+	Itemsize() uint8
+}
+
+type Type string
+
+const (
+	Int     Type = "int_"
+	Bool    Type = "bool_"
+	Float64 Type = "float64"
+)
+
+func (t Type) Itemsize() uint8 {
+	switch t {
+	case Bool:
+	    return 1
+	case Int, Float64:
+		return 8
+	default:
+		return 0
+	}
+}

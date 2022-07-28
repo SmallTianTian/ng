@@ -1,0 +1,25 @@
+package dtype
+
+import (
+	"fmt"
+)
+
+type Float64Impl struct {
+	f float64
+}
+
+func NewFloat64(f float64) *Float64Impl {
+	return &Float64Impl{f}
+}
+
+func (f *Float64Impl) Type() Type {
+	return Float64
+}
+
+func (f *Float64Impl) String() string {
+	return fmt.Sprintf("%f", f.f)
+}
+
+func (f *Float64Impl) Itemsize() uint8 {
+	return f.Type().Itemsize()
+}

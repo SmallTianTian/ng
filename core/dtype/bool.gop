@@ -1,0 +1,25 @@
+package dtype
+
+import (
+	"strconv"
+)
+
+type BoolImpl struct {
+	b bool
+}
+
+func NewBool(b bool) *BoolImpl {
+	return &BoolImpl{b}
+}
+
+func (b *BoolImpl) Type() Type {
+	return Bool
+}
+
+func (b *BoolImpl) String() string {
+	return strconv.FormatBool(b.b)
+}
+
+func (b *BoolImpl) Itemsize() uint8 {
+	return b.Type().Itemsize()
+}
