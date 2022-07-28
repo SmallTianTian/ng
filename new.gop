@@ -1,0 +1,20 @@
+package ng
+
+import (
+	"reflect"
+
+	"github.com/numgoplus/ng/core"
+	"github.com/numgoplus/ng/core/dtype"
+	"github.com/numgoplus/ng/internal/new"
+)
+
+func Arange(i int) *core.Ndarray {
+	if i < 0 {
+		i = 0
+	}
+	return Array([interface{}(v) for v <- :i])
+}
+
+func Array(data []interface{}) *core.Ndarray {
+	return new.FromArray(data)
+}

@@ -1,0 +1,120 @@
+package new
+
+import (
+	fmt "fmt"
+	"reflect"
+
+	"github.com/numgoplus/ng/core"
+	"github.com/numgoplus/ng/core/dtype"
+)
+
+func FromArray(array []interface{}) *core.Ndarray {
+	if len(array) == 0 {
+		return &core.Ndarray{}
+	}
+
+	shape := [len(array)]
+	childShape, kind := fromArrayGetShapeAndKind(reflect.ValueOf(array[0]))
+	convertFunc := fromArrayKind2ConvertFunc(kind)
+
+	var datas []dtype.Interface
+	if len(childShape) == 0 {
+		datas = [convertFunc(v) for v <- array]
+	} else {
+		shape = append(shape, childShape...)
+		datas = fromArrayArrayType(array, shape, convertFunc)
+	}
+
+	return &core.Ndarray{
+		Shape: shape,
+		Data:  datas,
+	}
+}
+
+func fromArrayGetShapeAndKind(arrayRV reflect.Value) ([]int, reflect.Kind) {
+	var shape []int
+	var t reflect.Kind
+	for {
+		t = arrayRV.Type().Kind()
+		if t != reflect.Slice && t != reflect.Array {
+			break
+		}
+		l := arrayRV.Len()
+		if l == 0 {
+			break
+		}
+		shape = append(shape, l)
+		arrayRV = arrayRV.Index(0)
+	}
+	return shape, t
+}
+
+func fromArrayKind2ConvertFunc(kind reflect.Kind) func(interface{}) dtype.Interface {
+	switch kind {
+	case reflect.Int:
+		return convertInt
+	case reflect.Float64:
+		return convertFloat64
+	case reflect.Bool:
+		return convertBool
+	default:
+		panic(fmt.Sprintf("NOT SUPPORTED TYPE(%s)", kind.String()))
+	}
+}
+
+func fromArrayArrayType(array []interface{}, shape []int, cf func(interface{}) dtype.Interface) []dtype.Interface {
+	l := 1
+	for s <- shape {
+		l *= s
+	}
+	result := make([]dtype.Interface, 0, l)
+
+	for v <- array {
+		fromArrayRecursionArray(&result, reflect.ValueOf(v), shape[1:], cf)
+	}
+	return result
+}
+
+func fromArrayRecursionArray(r *[]dtype.Interface, v reflect.Value, exceptLen []int, cf func(interface{}) dtype.Interface) {
+	isLeaf := len(exceptLen) == 0
+	if isLeaf {
+		*r = append(*r, cf(v.Interface()))
+		return
+	}
+
+	switch kind := v.Type().Kind(); kind {
+	case reflect.Slice, reflect.Array:
+	default:
+		panic(fmt.Sprintf("%v not array", v.Interface()))
+	}
+	if l := v.Len(); l != exceptLen[0] {
+		panic(fmt.Sprintf("%v have %d item, except %d item", v.Interface(), l, exceptLen[0]))
+	}
+	for i := 0; i < exceptLen[0]; i++ {
+		fromArrayRecursionArray(r, v.Index(i), exceptLen[1:], cf)
+	}
+}
+
+func convertBool(i interface{}) dtype.Interface {
+	b, ok := i.(bool)
+	if !ok {
+		panic(fmt.Sprintf("%v not bool", i))
+	}
+	return dtype.Interface(dtype.NewBool(b))
+}
+
+func convertFloat64(i interface{}) dtype.Interface {
+	b, ok := i.(float64)
+	if !ok {
+		panic(fmt.Sprintf("%v not float64", i))
+	}
+	return dtype.Interface(dtype.NewFloat64(b))
+}
+
+func convertInt(i interface{}) dtype.Interface {
+	b, ok := i.(int)
+	if !ok {
+		panic(fmt.Sprintf("%v not int", i))
+	}
+	return dtype.Interface(dtype.NewInt(b))
+}

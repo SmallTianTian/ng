@@ -1,0 +1,133 @@
+package ng_test
+
+import (
+	"reflect"
+	"testing"
+
+	ng "github.com/numgoplus/ng"
+	"github.com/numgoplus/ng/core"
+	"github.com/numgoplus/ng/core/dtype"
+)
+
+func TestArange(t *testing.T) {
+	type args struct {
+		i int
+	}
+	tests := []struct {
+		name string
+		args args
+		want *core.Ndarray
+	}{
+		{
+			name: "positive",
+			args: args{3},
+			want: &core.Ndarray{
+				Shape: [3],
+				Data:  [dtype.Interface(dtype.NewInt(i)) for i <- [0, 1, 2]],
+			},
+		},
+		{
+			name: "case zero",
+			args: args{0},
+			want: &core.Ndarray{},
+		},
+		{
+			name: "case negative",
+			args: args{-1},
+			want: &core.Ndarray{},
+		},
+	}
+	for tt <- tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ng.Arange(tt.args.i); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Arange() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestArray(t *testing.T) {
+	tests := []struct {
+		name  string
+		got   func() *core.Ndarray
+		want  *core.Ndarray
+		panic bool
+	}{
+		{
+			name: "bool",
+			got:  func() *core.Ndarray { return ng.Array([true, false, false]) },
+			want: &core.Ndarray{
+				Shape: [3],
+				Data:  [dtype.Interface(dtype.NewBool(i)) for i <- [true, false, false]],
+			},
+		},
+		{
+			name: "float64",
+			got:  func() *core.Ndarray { return ng.Array([1.2, 3.4, 5.]) },
+			want: &core.Ndarray{
+				Shape: [3],
+				Data:  [dtype.Interface(dtype.NewFloat64(i)) for i <- [1.2, 3.4, 5.0]],
+			},
+		},
+		{
+			name: "int",
+			got:  func() *core.Ndarray { return ng.Array([1, 2, 3]) },
+			want: &core.Ndarray{
+				Shape: [3],
+				Data:  [dtype.Interface(dtype.NewInt(i)) for i <- [1, 2, 3]],
+			},
+		},
+		{
+			name: "int array",
+			got:  func() *core.Ndarray { return ng.Array([[1, 2, 3], [4, 5, 6]]) },
+			want: &core.Ndarray{
+				Shape: [2, 3],
+				Data:  [dtype.Interface(dtype.NewInt(i)) for i <- [1, 2, 3, 4, 5, 6]],
+			},
+		},
+		{
+			name: "more levels int array",
+			got:  func() *core.Ndarray { return ng.Array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]]) },
+			want: &core.Ndarray{
+				Shape: [2, 2, 2],
+				Data:  [dtype.Interface(dtype.NewInt(i)) for i <- [1, 2, 3, 4, 5, 6, 7, 8]],
+			},
+		},
+		{
+			name: "empty",
+			got:  func() *core.Ndarray { return ng.Array([]) },
+			want: &core.Ndarray{},
+		},
+		{
+			name:  "bad int array, not same len",
+			got:   func() *core.Ndarray { return ng.Array([[1, 2, 3], [4, 5]]) },
+			panic: true,
+		},
+		{
+			name:  "bad array, not same type",
+			got:   func() *core.Ndarray { return ng.Array([[1, 2, 3], [4, 5, 6.7]]) },
+			panic: true,
+		},
+	}
+	for tt <- tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// defer func() {
+			// 	if i := recover(); i != nil && !tt.panic {
+			// 		panic(i)
+			// 	}
+			// }()
+			defer func() {
+				i := recover()
+				if tt.panic && i == nil {
+					t.Error("need panic")
+				} else if !tt.panic && i != nil {
+					t.Error(i)
+				}
+			}()
+
+			if got := tt.got(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Array() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
