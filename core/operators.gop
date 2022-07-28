@@ -1,0 +1,192 @@
+package core
+
+import (
+	"fmt"
+
+	"github.com/numgoplus/ng/core/dtype"
+)
+
+func (n *Ndarray) + (o *Ndarray) *Ndarray {
+	if !checkSameShape(n.Shape, o.Shape) {
+		const msg = "operands could not be broadcast together with shapes %v %v"
+		panic(fmt.Sprintf(msg, n.Shape, o.Shape))
+	}
+	if len(n.Data) == 0 {
+		return &Ndarray{}
+	}
+
+	var rds []dtype.Interface
+	switch n.Data[0].(type) {
+	case *dtype.IntImpl:
+		rds = [dtype.Interface(v.(*dtype.IntImpl)+o.Data[i].(*dtype.IntImpl)) for i, v <- n.Data]
+	case *dtype.Float64Impl:
+		rds = [dtype.Interface(v.(*dtype.Float64Impl)+o.Data[i].(*dtype.Float64Impl)) for i, v <- n.Data]
+	default:
+		panic("not support operator +")
+	}
+
+	return &Ndarray{
+		Shape: n.Shape,
+		Data:  rds,
+	}
+}
+
+func (n *Ndarray) - (o *Ndarray) *Ndarray {
+	if !checkSameShape(n.Shape, o.Shape) {
+		const msg = "operands could not be broadcast together with shapes %v %v"
+		panic(fmt.Sprintf(msg, n.Shape, o.Shape))
+	}
+	if len(n.Data) == 0 {
+		return &Ndarray{}
+	}
+
+	var rds []dtype.Interface
+	switch n.Data[0].(type) {
+	case *dtype.IntImpl:
+		rds = [dtype.Interface(v.(*dtype.IntImpl)-o.Data[i].(*dtype.IntImpl)) for i, v <- n.Data]
+	case *dtype.Float64Impl:
+		rds = [dtype.Interface(v.(*dtype.Float64Impl)-o.Data[i].(*dtype.Float64Impl)) for i, v <- n.Data]
+	default:
+		panic("not support operator +")
+	}
+
+	return &Ndarray{
+		Shape: n.Shape,
+		Data:  rds,
+	}
+}
+
+func (n *Ndarray) * (o *Ndarray) *Ndarray {
+	if !checkSameShape(n.Shape, o.Shape) {
+		const msg = "operands could not be broadcast together with shapes %v %v"
+		panic(fmt.Sprintf(msg, n.Shape, o.Shape))
+	}
+	if len(n.Data) == 0 {
+		return &Ndarray{}
+	}
+
+	var rds []dtype.Interface
+	switch n.Data[0].(type) {
+	case *dtype.IntImpl:
+		rds = [dtype.Interface(v.(*dtype.IntImpl)*o.Data[i].(*dtype.IntImpl)) for i, v <- n.Data]
+	case *dtype.Float64Impl:
+		rds = [dtype.Interface(v.(*dtype.Float64Impl)*o.Data[i].(*dtype.Float64Impl)) for i, v <- n.Data]
+	default:
+		panic("not support operator +")
+	}
+
+	return &Ndarray{
+		Shape: n.Shape,
+		Data:  rds,
+	}
+}
+
+func (n *Ndarray) / (o *Ndarray) *Ndarray {
+	if !checkSameShape(n.Shape, o.Shape) {
+		const msg = "operands could not be broadcast together with shapes %v %v"
+		panic(fmt.Sprintf(msg, n.Shape, o.Shape))
+	}
+	if len(n.Data) == 0 {
+		return &Ndarray{}
+	}
+
+	var rds []dtype.Interface
+	switch n.Data[0].(type) {
+	case *dtype.IntImpl:
+		rds = [dtype.Interface(v.(*dtype.IntImpl)/o.Data[i].(*dtype.IntImpl)) for i, v <- n.Data]
+	case *dtype.Float64Impl:
+		rds = [dtype.Interface(v.(*dtype.Float64Impl)/o.Data[i].(*dtype.Float64Impl)) for i, v <- n.Data]
+	default:
+		panic("not support operator +")
+	}
+
+	return &Ndarray{
+		Shape: n.Shape,
+		Data:  rds,
+	}
+}
+
+func (n *Ndarray) % (o *Ndarray) *Ndarray {
+	if !checkSameShape(n.Shape, o.Shape) {
+		const msg = "operands could not be broadcast together with shapes %v %v"
+		panic(fmt.Sprintf(msg, n.Shape, o.Shape))
+	}
+	if len(n.Data) == 0 {
+		return &Ndarray{}
+	}
+
+	var rds []dtype.Interface
+	switch n.Data[0].(type) {
+	case *dtype.IntImpl:
+		rds = [dtype.Interface(v.(*dtype.IntImpl)%o.Data[i].(*dtype.IntImpl)) for i, v <- n.Data]
+	case *dtype.Float64Impl:
+		rds = [dtype.Interface(v.(*dtype.Float64Impl)%o.Data[i].(*dtype.Float64Impl)) for i, v <- n.Data]
+	default:
+		panic("not support operator +")
+	}
+
+	return &Ndarray{
+		Shape: n.Shape,
+		Data:  rds,
+	}
+}
+
+func (n *Ndarray) | (o *Ndarray) *Ndarray {
+	if !checkSameShape(n.Shape, o.Shape) {
+		const msg = "operands could not be broadcast together with shapes %v %v"
+		panic(fmt.Sprintf(msg, n.Shape, o.Shape))
+	}
+	if len(n.Data) == 0 {
+		return &Ndarray{}
+	}
+
+	var rds []dtype.Interface
+	switch n.Data[0].(type) {
+	case *dtype.IntImpl:
+		rds = [dtype.Interface(v.(*dtype.IntImpl)|o.Data[i].(*dtype.IntImpl)) for i, v <- n.Data]
+	case *dtype.Float64Impl:
+		rds = [dtype.Interface(v.(*dtype.Float64Impl)|o.Data[i].(*dtype.Float64Impl)) for i, v <- n.Data]
+	default:
+		panic("not support operator +")
+	}
+
+	return &Ndarray{
+		Shape: n.Shape,
+		Data:  rds,
+	}
+}
+
+func (n *Ndarray) ^ (o *Ndarray) *Ndarray {
+	if !checkSameShape(n.Shape, o.Shape) {
+		const msg = "operands could not be broadcast together with shapes %v %v"
+		panic(fmt.Sprintf(msg, n.Shape, o.Shape))
+	}
+	if len(n.Data) == 0 {
+		return &Ndarray{}
+	}
+
+	var rds []dtype.Interface
+	switch n.Data[0].(type) {
+	case *dtype.IntImpl:
+		rds = [dtype.Interface(v.(*dtype.IntImpl)^o.Data[i].(*dtype.IntImpl)) for i, v <- n.Data]
+	case *dtype.Float64Impl:
+		rds = [dtype.Interface(v.(*dtype.Float64Impl)^o.Data[i].(*dtype.Float64Impl)) for i, v <- n.Data]
+	default:
+		panic("not support operator +")
+	}
+
+	return &Ndarray{
+		Shape: n.Shape,
+		Data:  rds,
+	}
+}
+
+func checkSameShape(x, y []int) bool {
+	if len(x) != len(y) {
+		return false
+	}
+	for i, v <- x if v != y[i] {
+		return false
+	}
+	return true
+}

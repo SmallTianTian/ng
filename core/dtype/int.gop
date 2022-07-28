@@ -23,3 +23,31 @@ func (i *IntImpl) String() string {
 func (i *IntImpl) Itemsize() uint8 {
 	return i.Type().Itemsize()
 }
+
+func (i *IntImpl) + (y *IntImpl) *IntImpl {
+	return &IntImpl{i.i + y.i}
+}
+
+func (i *IntImpl) - (y *IntImpl) *IntImpl {
+	return &IntImpl{i.i - y.i}
+}
+
+func (i *IntImpl) * (y *IntImpl) *IntImpl {
+	return &IntImpl{i.i * y.i}
+}
+
+func (i *IntImpl) / (y *IntImpl) *IntImpl {
+	return &IntImpl{i.i / y.i}
+}
+
+func (i *IntImpl) % (y *IntImpl) *IntImpl {
+	return &IntImpl{i.i % y.i}
+}
+
+func (i *IntImpl) | (y *IntImpl) *IntImpl {
+	return &IntImpl{i.i | y.i}
+}
+
+func (i *IntImpl) ^ (y *IntImpl) *IntImpl {
+	return &IntImpl{i.i ^ y.i}
+}

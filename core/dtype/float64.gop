@@ -2,6 +2,7 @@ package dtype
 
 import (
 	"fmt"
+	"math"
 )
 
 type Float64Impl struct {
@@ -22,4 +23,32 @@ func (f *Float64Impl) String() string {
 
 func (f *Float64Impl) Itemsize() uint8 {
 	return f.Type().Itemsize()
+}
+
+func (f *Float64Impl) + (o *Float64Impl) *Float64Impl {
+	return &Float64Impl{f.f + o.f}
+}
+
+func (f *Float64Impl) - (o *Float64Impl) *Float64Impl {
+	return &Float64Impl{f.f - o.f}
+}
+
+func (f *Float64Impl) * (o *Float64Impl) *Float64Impl {
+	return &Float64Impl{f.f * o.f}
+}
+
+func (f *Float64Impl) / (o *Float64Impl) *Float64Impl {
+	return &Float64Impl{f.f / o.f}
+}
+
+func (f *Float64Impl) % (o *Float64Impl) *Float64Impl {
+	return &Float64Impl{math.Mod(f.f, o.f)}
+}
+
+func (f *Float64Impl) | (o *Float64Impl) *Float64Impl {
+	panic("ufunc 'bitwise_or' not supported for the input types, and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''")
+}
+
+func (f *Float64Impl) ^ (o *Float64Impl) *Float64Impl {
+	panic("TypeError: ufunc 'bitwise_xor' not supported for the input types, and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''")
 }
